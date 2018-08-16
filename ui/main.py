@@ -1,14 +1,18 @@
 import npyscreen
 from widget_event_button import EventButton
 from join_session import JoinSessionForm
+from join_session_waiting import JoinSessionWaitingForm
 from create_session import CreateSessionForm
+from create_session_waiting import CreateSessionWaitingForm
 
 class MainUI(npyscreen.NPSAppManaged):
     """docstring for MainUI"""
     def onStart(self):
         self.registerForm("MAIN", MainForm())
         self.registerForm("CreateSession", CreateSessionForm())
+        self.registerForm("CreateSessionWaiting", CreateSessionWaitingForm())
         self.registerForm("JoinSession", JoinSessionForm())
+        self.registerForm("JoinSessionWaiting", JoinSessionWaitingForm())
      
 
 class MainForm(npyscreen.Form):
@@ -29,7 +33,7 @@ class MainForm(npyscreen.Form):
         # Actions
         self.btn1 = self.add(EventButton, name="1. Create Session", callback=self.when_choice_btn1)
         self.btn2 = self.add(EventButton, name="2. Join to Session", callback=self.when_choice_btn2)
-        self.btn3 = self.add(EventButton, name="3. Exit (Escape)")
+        self.btn3 = self.add(EventButton, name="3. Exit (Escape)", callback=self.exit_application)
 
         self.online = self.add(npyscreen.FixedText, name="none", value="Online: 5", 
                                         rely=7, 
@@ -65,15 +69,6 @@ class MainForm(npyscreen.Form):
     def exit_application(self, *args, **keywords):
         self.parentApp.setNextForm(None)
         self.editing = False
-
-    def on_ok(self):
-        # Prevent Next Form
-        self.editing = True
-
-    def on_cancel(self):
-        print('form exit')
-        exit()
-
     
 
 if __name__ == '__main__':
