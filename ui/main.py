@@ -1,22 +1,35 @@
 import npyscreen
+from widget_event_button import EventButton
+from join_session import JoinSessionForm
+from create_session import CreateSessionForm
 
 class MainUI(npyscreen.NPSAppManaged):
     """docstring for MainUI"""
     def onStart(self):
         self.registerForm("MAIN", MainForm())
-        self.registerForm("CreateServer", CreateServerForm())
+        self.registerForm("CreateSession", CreateSessionForm())
+        self.registerForm("JoinSession", JoinSessionForm())
      
 
 class MainForm(npyscreen.Form):
     """docstring for MainForm"""
     def create(self):
         self.name = "Welcome to the Deck21!"
+        self.keypress_timeout = 10
+
+        self.add_handlers({
+            "1": self.when_choice_btn1,
+            "2": self.when_choice_btn2,
+            "3": self.exit_application,
+        })
+
+        self.how_exited_handers[npyscreen.wgwidget.EXITED_ESCAPE] = self.exit_application
 
         self.nextrely += 5
         # Actions
-        self.btn1 = self.add(npyscreen.Button, name="1. Create Session")
-        self.btn2 = self.add(npyscreen.Button, name="2. Join to Session")
-        self.btn3 = self.add(npyscreen.Button, name="3. Exit (Escape)")
+        self.btn1 = self.add(EventButton, name="1. Create Session", callback=self.when_choice_btn1)
+        self.btn2 = self.add(EventButton, name="2. Join to Session", callback=self.when_choice_btn2)
+        self.btn3 = self.add(EventButton, name="3. Exit (Escape)")
 
         self.online = self.add(npyscreen.FixedText, name="none", value="Online: 5", 
                                         rely=7, 
@@ -37,13 +50,21 @@ class MainForm(npyscreen.Form):
                                         )
 
     # TODO: add handlers on number hotkeys 1, 2, 3 and Escape
+    def when_choice_btn1(self, widget=None, *args, **keywords):
+        #self.status_bar.value = "Note: {} has {}".format('btn', widget)
+        #self.display()
+        self.parentApp.setNextForm("CreateSession")
+        self.editing = False
 
-    def afterEditing(self):
-        self.parentApp.setNextForm("MAIN")
+    def when_choice_btn2(self, widget=None, *args, **keywords):
+        #self.status_bar.value = "Note: {} has {}".format('btn', widget)
+        #self.display()
+        self.parentApp.setNextForm("JoinSession")
+        self.editing = False
 
-    def while_editing(self, widget):
-        #pass
-        self.status_bar.value = "Note: {} has {}".format(widget.name, widget.value)
+    def exit_application(self, *args, **keywords):
+        self.parentApp.setNextForm(None)
+        self.editing = False
 
     def on_ok(self):
         # Prevent Next Form
@@ -53,24 +74,7 @@ class MainForm(npyscreen.Form):
         print('form exit')
         exit()
 
-
-class CreateServerForm(npyscreen.Form):
-    """docstring for MainForm"""
-    def create(self):
-        self.name = "Create Server:"
-        self.myName = self.add(npyscreen.TitleText, name="Name")
-        self.maxPlayers = self.add(npyscreen.TitleText, name="Max Players")
-
-    def afterEditing(self):
-        self.parentApp.setNextForm(None)
-
-
-class EventButton(npyscreen.Button):
-    """docstring for EventButton"""
-    def whenToggled(self):
-        pass
-        
-
+    
 
 if __name__ == '__main__':
     ui = MainUI().run()
