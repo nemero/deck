@@ -8,5 +8,5 @@ class EventButton(npyscreen.Button):
 
     def whenToggled(self):
         if self.callback:
-            print(self.name)
+            #print(self.name)
             self.callback(widget=self)

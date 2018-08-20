@@ -4,6 +4,8 @@ from join_session import JoinSessionForm
 from join_session_waiting import JoinSessionWaitingForm
 from create_session import CreateSessionForm
 from create_session_waiting import CreateSessionWaitingForm
+from started_game import StartedGameForm
+from finished_game import FinishedGameForm
 
 class MainUI(npyscreen.NPSAppManaged):
     """docstring for MainUI"""
@@ -13,9 +15,11 @@ class MainUI(npyscreen.NPSAppManaged):
         self.registerForm("CreateSessionWaiting", CreateSessionWaitingForm())
         self.registerForm("JoinSession", JoinSessionForm())
         self.registerForm("JoinSessionWaiting", JoinSessionWaitingForm())
+        self.registerForm("StartedGame", StartedGameForm())
+        self.registerForm("FinishedGame", FinishedGameForm())
      
 
-class MainForm(npyscreen.Form):
+class MainForm(npyscreen.FormBaseNew):
     """docstring for MainForm"""
     def create(self):
         self.name = "Welcome to the Deck21!"

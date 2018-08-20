@@ -1,5 +1,6 @@
 import npyscreen
 import curses
+from forms.w_players_grid import WidgetPlayersGrid
 
 class JoinSessionWaitingForm(npyscreen.ActionForm):
     """docstring for MainForm"""
@@ -11,27 +12,28 @@ class JoinSessionWaitingForm(npyscreen.ActionForm):
         self.__class__.CANCEL_BUTTON_BR_OFFSET = (2, 18)
         
         self.w_server_name = self.add(npyscreen.FixedText, 
-                                name="Note:", 
-                                value="Server: <host name>",
-                                editable=False
-                                )
+                    name="Note:", 
+                    value="Server: <host name>",
+                    editable=False
+                )
 
-        self.w_players_grid = self.add(npyscreen.GridColTitles,
-                                        name="Waiting Players...",
-                                        select_whole_line=True
-                                        )
+        self.nextrely -= 1
 
-        self.w_players_grid.values = [
-            ['1.', 'Player 1'],
-            ['2.', 'Your Nick'],
-            ['3.', 'Player 3']
-        ]
-
+        self.w_players_grid = self.add(WidgetPlayersGrid,
+                    relx=40,
+                    max_height=7,
+                    column_width=30,
+                    values=[
+                        ['1. Player 1'],
+                        ['2. Your Nick'],
+                        ['3. Player 3']
+                    ]
+                )
 
     def on_ok(self):
         # Prevent Next Form
         #self.editing = True
-        self.parentApp.setNextForm(None)
+        self.parentApp.setNextForm("StartedGame")
 
     def on_cancel(self):
         self.parentApp.setNextForm("JoinSession")

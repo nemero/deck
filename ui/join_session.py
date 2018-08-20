@@ -7,21 +7,33 @@ class JoinSessionForm(JoinSessionActionForm):
     def create(self):
         self.name = "Join to Session:"
         
-        session_list = self.add(SessionGridColTitles, 
-            name="Select exist session",
-            select_whole_line=True,
+        self.add_handlers({
+            "1": self.when_select_session,
+        })
 
+        self.session_list = self.add(SessionGridColTitles,
+                values=[
+                    ['Host name 1', 'Live'], 
+                    ['Host name 2'],
+                    ['Host name 3', 'Protected'],
+                    ['Host name 4', 'Full'],
+                ],
+                col_titles = [
+                    'Server Name',
+                    'Status'
+                ],
+                scroll_exit=True,
+                max_height=7,
+                max_width=60
             )
-        session_list.col_titles = [
-            'Server Name',
-            'Status'
-        ]
-        session_list.values = [
-            ['Host name 1', 'Live'], 
-            ['Host name 2'],
-            ['Host name 3', 'Protected'],
-            ['Host name 4', 'Full'],
-        ]
+
+        self.nextrely += 1
+
+        self.status_bar = self.add(npyscreen.FixedText, name="Note:", value="YOHOHO", 
+                rely = -5, 
+                relx=3,
+                editable=False
+            )
 
     def on_ok(self):
         # Prevent Next Form
@@ -33,6 +45,9 @@ class JoinSessionForm(JoinSessionActionForm):
 
     def on_create_session(self):
         self.parentApp.setNextForm("CreateSession")
+
+    def when_select_session(self, widget):
+        self.status_bar.value = "selected session"
         
 
 class SessionGridColTitles(npyscreen.GridColTitles):

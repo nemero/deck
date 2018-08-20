@@ -10,8 +10,8 @@ class CreateSessionForm(npyscreen.ActionForm):
         self.__class__.OK_BUTTON_BR_OFFSET = (2,6)
         self.__class__.CANCEL_BUTTON_BR_OFFSET = (2, 18)
 
-        self.myName = self.add(npyscreen.TitleText, name="Enter host name:")
-        self.maxPlayers = self.add(npyscreen.TitleText, name="Enter max players:")
+        self.host_name = self.add(npyscreen.TitleText, name="Enter host name:", begin_entry_at=30)
+        self.max_players = self.add(npyscreen.TitleText, name="Enter max players:", begin_entry_at=30)
 
     def on_ok(self):
         # Prevent Next Form
