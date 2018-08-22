@@ -29,4 +29,4 @@ class ListenThread(ListenObserver, Thread):
     def response(self, response):
     	#print(data.decode())
     	# parse_command inherit from interface
-    	self.parse_command(response)
+    	self.parse_command(response.decode())

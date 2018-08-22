@@ -20,5 +20,9 @@ class Observer:
 
 	def event(self, event_group, data, *args, **keywords):
 		"""call all subscribe methods for pass event name"""
-		for event in self.events[event_group]:
-			event(data, *args, **keywords)
+		if event_group in self.events:
+			for event in self.events[event_group]:
+				event(data, *args, **keywords)
+		else:
+			# raise throw or notify if event not exist
+			pass

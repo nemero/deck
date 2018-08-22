@@ -6,6 +6,7 @@ from time import sleep
 import random
 import threading
 from threading import Thread
+import json
 
 clients = {}
 listeners = {}
@@ -14,26 +15,18 @@ terminate = False
 class ClientThread(Thread):
     """docstring for ClientThread
         Commands for client:
-        online
-        take - for get card
-        finish = for finish game and waiting other players
+        types: system, message
     """
-    player = None
-    
     def __init__(self, name, conn, addr):
         super(ClientThread, self).__init__()
         self.name = name
         self.conn = conn
         self.addr = addr
 
-    def base_str(self):
-        ip, port = self.addr
-        return '[Client]: ' + str(ip) + ' ' + str(port)
-
     def run(self):
         """Launch thread"""
         ip, port = self.addr
-        print(self.base_str(), 'is started.')
+        print('[client:{}:{}]'.format(str(ip), str(port)), 'is started.')
 
         while not terminate:
             data = self.conn.recv(1024)
@@ -42,19 +35,29 @@ class ClientThread(Thread):
                 func = getattr(self, data.decode())
                 func()
             elif data:
-                print(self.base_str(), 'message:', data.decode())
-                msg = self.base_str() + ' message: ' + data.decode()
+                response = self.response('message', data.decode())
+                print(response)
                 for idx in clients:
                     if (port not in clients[idx]['address']):
-                        clients[idx]['connect'].send(msg.encode())
+                        clients[idx]['connect'].send(response)
             else: 
                 break
 
             sleep(1)
 
+    def response(self, command, data):
+        ip, port = self.addr
+        response = {
+            'client': '{}:{}'.format(str(ip), str(port)),
+            'command': command,
+            'data': data
+        }
+
+        return json.dumps(response).encode()
+
     def online(self):
-        data = 'Current online: ' + str(len(clients))
-        self.conn.send(data.encode())
+        data = self.response('system', 'Current online: ' + str(len(clients)))
+        self.conn.send(data)
 
 
 class MonitorThread(Thread):
@@ -71,7 +74,7 @@ class MonitorThread(Thread):
                 #print(client.is_alive(), client.ident)
                 if clients[idx]['thread'].is_alive() == False and clients[idx]['thread'].ident != None:
                     ip, port = clients[idx]['address']
-                    print('[Client]:', ip, port, clients[idx]['thread'].name, 'is terminated.')
+                    print('[client:{}:{}]'.format(ip, port), 'is terminated.')
                     index_del.append(idx)
 
             # Remove terminated threads from client list
@@ -98,13 +101,15 @@ class Listener(object):
     def run(self):
         conn, addr = self.sock.accept()
         client_number = len(clients) + 1
-        clients[client_number] = {
-            'thread': ClientThread('client-' + str(client_number), conn, addr),
+        ip, port = addr
+        client_id = 'client-{}-{}-{}'.format(client_number, ip, port)
+        clients[client_id] = {
+            'thread': ClientThread(client_id, conn, addr),
             'connect': conn,
             'address': addr
         }
-        clients[client_number]['thread'].setDaemon(True)
-        clients[client_number]['thread'].start()
+        clients[client_id]['thread'].setDaemon(True)
+        clients[client_id]['thread'].start()
 
         self.run()
         

@@ -12,3 +12,6 @@ class TestSession(object):
 
     def test_v2(self, data):
         print('called test_v2 event')
+
+    def online(self, data):
+        print(data)
