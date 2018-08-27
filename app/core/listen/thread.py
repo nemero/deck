@@ -18,15 +18,19 @@ class ListenThread(ListenObserver, Thread):
     def run(self):
         """Launch thread"""
         while True:
-            data = self.sock.recv(1024)
-            if data:
-            	self.response(data)
-            else:
+            try:
+                # if sock is closed will raised throw
+                data = self.sock.recv(1024)
+                if data:
+                    self.response(data)
+                else:
+                    break
+
+            except:
                 break
 
             sleep(1)
 
     def response(self, response):
-    	#print(data.decode())
-    	# parse_command inherit from interface
+    	# parse_command inherit from "interface"
     	self.parse_command(response.decode())

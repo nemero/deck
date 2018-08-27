@@ -7,30 +7,38 @@ class Connection:
     def __init__(self, host='localhost', port=8080):
         self.host = host
         self.port = port
-        self.terminate = False
+        self.is_terminate = False
         
     def connect(self, observer):
         self.sock = socket.socket()
         self.sock.connect((self.host, self.port))
-
-        listen = ListenThread(name='listen', sock=self.sock, observer=observer)
+        self.observer = observer
+        self.observer.register('shutdown', 'after-shutdown')
+    
+        listen = ListenThread(name='listen', sock=self.sock, observer=self.observer)
         listen.setDaemon(True)
         listen.start()
 
     def run(self):
-        while self.terminate == False:
+        while self.is_terminate == False:
             try:
+                # If sock is closed and user enter any key it'll raise throw
                 msg = input()
                 self.sock.send(msg.encode())
             except:
-                print('Client Terminated.')
-                self.terminate = True
+                self.observer.event('after-shutdown', 'Client is terminated.')
+                self.is_terminate = True
 
             sleep(1)
 
-        self.sock.close()
+        self.observer.event('after-shutdown', 'Exit.')
 
     def send(self, data):
         sock.send(data.encode())
+
+    def terminate(self, data):
+        self.is_terminate = True
+        self.sock.close()
         
-        
+    def finish(self, data=None):
+        print(data)

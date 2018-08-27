@@ -3,13 +3,16 @@ class Observer:
 	def __init__(self):
 		self.events = {}
 		
-	def register(self, event_group):
+	def register(self, *events_group):
 		"""register observe events group"""
-		if event_group not in self.events:
-			self.events[event_group] = []
-		else:
-			"""raise throw error if event already observed"""
-			pass
+		for event in events_group:
+			if event not in self.events:
+				self.events[event] = []
+			else:
+				"""raise throw error if event already observed"""
+				pass
+
+		print(self.events)
 		
 	def subscribe(self, event_group, callback):
 		if event_group in self.events:
